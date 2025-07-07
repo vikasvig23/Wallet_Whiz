@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Wallet Whiz</string>
+    <string name="title_activity_sign_up">SignUp</string>
+    <string name="title_activity_signup">Signup</string>
+    <string name="hello">Wallet Whiz</string>
+    <string name="create">Create New</string>
+    <string name="welcome">Welcome Back</string>
+    <string name="first_name">UserName</string>
+    <string name="email">Your Email</string>
+    <string name="pass">Password</string>
+    <string name="hidePassword">Hide Password</string>
+    <string name="showPassword">Show Password</string>
+    <string name="terms_and_condition">By continuing you accept our Privacy Policy and Term of Use</string>
+    <string name="terms_and_condn_header">Terms of Use</string>
+    <string name="register">Sign Up</string>
+    <string name="or">or</string>
+    <string name="go_to">Already have an Account? Login</string>
+    <string name="Welcome">Welcome Back</string>
+    <string name="login">Login</string>
+    <string name="forgot_pass">Forgot Password</string>
+    <string name="logout">Logout</string>
+    <string name="menu">Menu</string>
+    <string name="home">Home</string>
+    <string name="navigation_header">App Drawer</string>
+    <string name="title_activity_currency_list_on_login">CurrencyListOnLogin</string>
+
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "851444822615",
+    "project_id": "wallet-whiz",
+    "storage_bucket": "wallet-whiz.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:851444822615:android:02c13ef519d6e501c7a912",
+        "android_client_info": {
+          "package_name": "com.example.expensestracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSSK9_Lf2OrgN8Zm3o5hsrPnqY9Ll9ug0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
