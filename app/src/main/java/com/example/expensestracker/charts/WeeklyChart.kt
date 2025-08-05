@@ -7,7 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.expensestracker.db_model.Expense
+import com.example.expensestracker.db_model.ExpensesFb
+
 import com.example.expensestracker.db_model.Recurrence
 import com.example.expensestracker.db_model.groupedByDayOfWeek
 
@@ -21,7 +22,7 @@ import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
 import java.time.DayOfWeek
 
 @Composable
-fun WeeklyChart(expenses: List<Expense>) {
+fun WeeklyChart(expenses: List<ExpensesFb>) {
     val groupedExpenses = expenses.groupedByDayOfWeek()
 
     BarChart(

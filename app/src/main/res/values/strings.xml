@@ -6,7 +6,7 @@
     <string name="create">Create New</string>
     <string name="welcome">Welcome Back</string>
     <string name="first_name">UserName</string>
-    <string name="email">Your Email</string>
+    <string name="email">Enter Your Email</string>
     <string name="pass">Password</string>
     <string name="hidePassword">Hide Password</string>
     <string name="showPassword">Show Password</string>
@@ -23,5 +23,8 @@
     <string name="home">Home</string>
     <string name="navigation_header">App Drawer</string>
     <string name="title_activity_currency_list_on_login">CurrencyListOnLogin</string>
+    <string name="wallet_disc">A place where you can track your expenses.</string>
+    <string name="resetEmail">Send Reset Email</string>
+    <string name="frgetPAss">Forgot Password</string>
 
 </resources>

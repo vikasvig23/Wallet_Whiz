@@ -6,24 +6,37 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
 
-class Category():RealmObject {
+//class Category():RealmObject {
+//
+//    @PrimaryKey
+//    var id: ObjectId = ObjectId.create()
+//    var _colorValue: String = "0,0,0"
+//    var name: String = ""
+//    val color: Color
+//        get() {
+//            val colorComponents = _colorValue.split(",")
+//            val (red, green, blue) = colorComponents
+//            return Color(red.toFloat(), green.toFloat(), blue.toFloat())
+//        }
+//
+//    constructor(
+//        name: String,
+//        color: Color
+//    ) : this() {
+//        this.name = name
+//        this._colorValue = "${color.red},${color.green},${color.blue}"
+//    }
+//}
 
-    @PrimaryKey
-    var id: ObjectId = ObjectId.create()
-    private var _colorValue: String = "0,0,0"
-    var name: String = ""
-    val color: Color
-        get() {
-            val colorComponents = _colorValue.split(",")
-            val (red, green, blue) = colorComponents
-            return Color(red.toFloat(), green.toFloat(), blue.toFloat())
-        }
-
-    constructor(
-        name: String,
-        color: Color
-    ) : this() {
-        this.name = name
-        this._colorValue = "${color.red},${color.green},${color.blue}"
+data class Category(
+   // val id: String = "",
+    val name: String = "",
+    val colorValue: String = "0,0,0"
+) {
+    fun toColor(): Color {
+        val parts = colorValue.split(",").map { it.toFloat() }
+        return Color(parts[0], parts[1], parts[2])
     }
 }
+
+

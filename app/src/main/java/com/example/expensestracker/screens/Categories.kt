@@ -36,10 +36,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,6 +53,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.expensestracker.Components.UnStyledTextField
 import com.example.expensestracker.R
 import com.example.expensestracker.data.CategoriesViewModel
+import com.example.expensestracker.data.CategoriesViewModelFactory
 
 import com.example.expensestracker.ui.theme.BackgroundElevated
 import com.example.expensestracker.ui.theme.Destructive
@@ -59,6 +63,8 @@ import com.example.expensestracker.ui.theme.TopAppBarBackground
 import com.github.skydoves.colorpicker.compose.AlphaTile
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -68,8 +74,13 @@ import me.saket.swipe.SwipeableActionsBox
 )
 @Composable
 fun Categories(
-    navController: NavController, vm: CategoriesViewModel = viewModel()
+    navController: NavController
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val factory = remember { CategoriesViewModelFactory(context) }
+    val vm: CategoriesViewModel = viewModel(factory = factory)
+
     val uiState by vm.uiState.collectAsState()
 
     val colorPickerController = rememberColorPickerController()
@@ -115,7 +126,7 @@ fun Categories(
                                     SwipeAction(
                                         icon = painterResource(R.drawable.delete),
                                         background = Destructive,
-                                        onSwipe = { vm.deleteCategory(category) }
+                                        onSwipe = { vm.deleteCategory(context,category) }
                                     ),
                                 ),
                                 modifier = Modifier.animateItemPlacement()
@@ -126,7 +137,7 @@ fun Categories(
                                         modifier = Modifier.padding(horizontal = 16.dp)
                                     ) {
                                         Surface(
-                                            color = category.color,
+                                            color = category.toColor(),
                                             shape = CircleShape,
                                             border = BorderStroke(
                                                 width = 2.dp,
@@ -146,7 +157,9 @@ fun Categories(
                                 }
                             }
                             if (index < uiState.categories.size - 1) {
-                                Row(modifier = Modifier.background(Color.LightGray).height(1.dp)) {
+                                Row(modifier = Modifier
+                                    .background(Color.LightGray)
+                                    .height(1.dp)) {
                                     HorizontalDivider(
                                         modifier = Modifier.padding(start = 16.dp),
                                         thickness = 1.dp,
@@ -161,7 +174,7 @@ fun Categories(
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(bottom =90.dp)
+                    .padding(bottom = 90.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -242,8 +255,9 @@ fun Categories(
                         )
                     }
                 }
+
                 IconButton(
-                    onClick = vm::createNewCategory,
+                    onClick = {coroutineScope.launch { vm.createNewCategory(context) }},
                     modifier = Modifier
                         .padding(start = 16.dp)
                 ) {

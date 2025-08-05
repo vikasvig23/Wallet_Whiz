@@ -4,7 +4,7 @@ plugins {
     id ("io.realm.kotlin")
     id("com.google.gms.google-services")
     id ("kotlin-kapt")
-    id ("com.google.dagger.hilt.android")
+    //id ("com.google.dagger.hilt.android")
 }
 
 android {
@@ -84,6 +84,7 @@ dependencies {
    implementation(platform("androidx.compose:compose-bom:2024.01.00"))
     implementation(platform("androidx.compose:compose-bom:2024.01.00"))
     implementation ("com.github.skydoves:colorpicker-compose:1.0.0")
+    implementation("com.google.firebase:firebase-database-ktx:21.0.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -99,7 +100,14 @@ dependencies {
   //  implementation ("io.sentry:sentry-compose-android:6.13.1")
    // implementation("androidx.lifecycle:lifecycle-view-model-compose:2.6.1")
 
+    // DataStore
+    implementation ("androidx.datastore:datastore-preferences:1.1.0")
 
+// Tink for encryption (optional but recommended)
+    implementation ("com.google.crypto.tink:tink-android:1.6.1")
+
+
+    implementation ("androidx.security:security-crypto:1.1.0-alpha06")
    // implementation ("androidx.hilt:hilt-compiler:1.2.0")
    // implementation("com.google.dagger:hilt-compiler:2.44")
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))

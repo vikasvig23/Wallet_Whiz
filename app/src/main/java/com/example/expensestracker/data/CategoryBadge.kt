@@ -9,19 +9,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.expensestracker.db_model.Category
 import com.example.expensestracker.ui.theme.Shapes
+import com.example.expensestracker.utils.Utility
 
 @Composable
 fun CategoryBadge(category: Category, modifier: Modifier = Modifier) {
+    val badgeColor = category.toColor()
+
     Surface(
         shape = Shapes.large,
-        color = category.color.copy(alpha = 0.25f),
+        color = badgeColor.copy(alpha = 0.25f),
         modifier = modifier,
     ) {
         Text(
             category.name,
-            color = category.color,
+            color = badgeColor,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            fontFamily = Utility.Poppins,
         )
     }
 }

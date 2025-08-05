@@ -8,11 +8,14 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.provider.Settings.Global.putString
+import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -21,7 +24,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.currentRecomposeScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.traceEventEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,131 +57,133 @@ import com.example.expensestracker.R
 import com.example.expensestracker.data.RegistrationUIState
 import com.example.expensestracker.data.SignUpViewModel
 import com.example.expensestracker.data.SignUpUIEvent
-
+import com.example.expensestracker.utils.Utility
 
 
 @Composable
-fun SignUpScreen(loginViewModel: SignUpViewModel= viewModel()){
+fun SignUpScreen(loginViewModel: SignUpViewModel = viewModel()) {
 
-
-    val showToast = loginViewModel.showMessageBar.value
-    val toastMessage = loginViewModel.messageText.value
-    val isSuccess = loginViewModel.isSuccessMessage.value
-
-// Show the toast
-
-
-
+    val state by loginViewModel.state.collectAsState()
     val context = LocalContext.current
+    val showMessageBar by loginViewModel.showMessageBar
+    val messageText by loginViewModel.messageText
+    val isSuccess by loginViewModel.isSuccessMessage
 
-    Box(modifier=Modifier.fillMaxSize() .zIndex(2f), contentAlignment = Alignment.Center ) {
+
+    Box(
+        modifier = Modifier.fillMaxWidth().zIndex(1f),
+        contentAlignment = Alignment.Center
+    ) {
         AnimatedMessageBar(
-            message = loginViewModel.messageText.value,
-            isSuccess = loginViewModel.isSuccessMessage.value,
-            show = loginViewModel.showMessageBar.value,
+            message = messageText,
+            isSuccess = isSuccess,
+            show = showMessageBar,
             onDismiss = { loginViewModel.showMessageBar.value = false }
         )
+
+
+        LaunchedEffect(showMessageBar) {
+            if (showMessageBar) {
+                Toast.makeText(context, messageText, Toast.LENGTH_SHORT).show()
+            }
+        }
+
 
         Surface(
             color = Color.White,
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.LightGray)
-                .padding(28.dp)
-
+                .background(Color.White)
+                .padding(start = 28.dp, end = 28.dp)
         ) {
-
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.LightGray)
-                    .padding(0.dp, 20.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)
+
             ) {
-                NormalTextComponents(value = stringResource(id = com.example.expensestracker.R.string.hello))
+                Image(
+                    painter = painterResource(id = R.drawable.wallet_whiz),
+                    contentDescription = "",
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
 
-                HeadingTextComponents(value = stringResource(id = com.example.expensestracker.R.string.create))
 
-                Spacer(modifier = Modifier.height(30.dp))
+                )
+
+                //NormalTextComponents(value = stringResource(R.string.hello))
+                HeadingTextComponents(value = stringResource(R.string.create))
+                Spacer(modifier = Modifier.height(15.dp))
 
                 Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                ){
-                MyTextField(
-                    labelValue = stringResource(id = com.example.expensestracker.R.string.first_name),
-                    painterResource = painterResource(id = R.drawable.profile),
-                    onTextSelected = { newName ->
-                        val currentState = loginViewModel.fields.value ?: RegistrationUIState()
-                        loginViewModel.fields.value = currentState.copy(name = newName)
-
-                    },
-                   // errorStatus = loginViewModel.registrationUIState.value.nameError
-                )
-
-                MyTextField(labelValue = stringResource(id = com.example.expensestracker.R.string.email),
-                    painterResource = painterResource(id = R.drawable.mail),
-                    onTextSelected = { email->
-                        val emailState = loginViewModel.fields.value ?: RegistrationUIState()
-                        loginViewModel.fields.value = emailState.copy(email = email)
-
-                    }, //errorStatus = loginViewModel.registrationUIState.value.emailError
-                )
-
-                MyPasswordField(labelValue = stringResource(id = R.string.pass),
-                    painterResource = painterResource(
-                        id = R.drawable.lock
-                    ),
-                    onTextSelected = {password->
-                        val passState = loginViewModel.fields.value ?: RegistrationUIState()
-                        loginViewModel.fields.value = passState.copy(password = password)
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                ) {
 
 
-                    },
-              //      errorStatus = loginViewModel.registrationUIState.value.passwordError
-                )
+                    MyTextField(
+                        labelValue = stringResource(R.string.first_name),
+                        painterResource = painterResource(R.drawable.profile),
+                        value = state.name,
+                        onTextSelected = { name->
+                            loginViewModel.updateField("name", name)  },
+                        errorStatus = state.touched && state.name.length < 5
+                    )
 
-//                CheckboxComponent(value = stringResource(id = R.string.terms_and_condition),
-//                    onTextSelected = {
-//                        AppRouter.navigateTo(Screen.TermsAndCondnScreen)
-//                    },
-//                    onCheckedChange = {
-//                        loginViewModel.onEvent(SignUpUIEvent.PrivacyPolicyCheckBoxClicked(it))
-//
-//                    })
-                Spacer(modifier = Modifier.heightIn(60.dp))
-                    AnimatedSwitchButton(
-                        text = stringResource(id = R.string.register),
-                        isEnabled =true,
-                        onClick = {
-                            loginViewModel.createUserInFirebase()
-                        }
-
+                    MyTextField(
+                        labelValue = stringResource(R.string.email),
+                        painterResource = painterResource(R.drawable.mail),
+                        value = state.email,
+                        onTextSelected = { email ->
+                            loginViewModel.updateField("email", email)
+                          },
+                        errorStatus = state.touched && !Utility.isValidEmail(state.email)
                     )
 
 
+
+
+                    MyPasswordField(
+                        labelValue = stringResource(R.string.pass),
+                        painterResource = painterResource(R.drawable.lock),
+                        onTextSelected = {
+                             password ->
+                                loginViewModel.updateField("password", password)
+
+
+                        },
+                        errorStatus = state.touched && state.password.length < 8
+                    )
+
+                    Spacer(modifier = Modifier.heightIn(35.dp))
+
+
+                        AnimatedSwitchButton(
+                        text = stringResource(R.string.register),
+                        isEnabled = true,
+                        onClick = {
+                            loginViewModel.createUserInFirebase(context)
+                        }
+                    )
+
                     Spacer(modifier = Modifier.height(20.dp))
-                DividerTextComponent()
 
-                ClickableLoginTextComponent(tryingToLogin = true, onTextSelected = {
+                    DividerTextComponent()
 
-                    AppRouter.navigateTo(Screen.LoginScreen)
-                })
-}
-
-
-
-
+                    ClickableLoginTextComponent(
+                        tryingToLogin = true,
+                        onTextSelected = {
+                            AppRouter.navigateTo(Screen.LoginScreen)
+                        }
+                    )
+                }
             }
-
         }
-
 
         if (loginViewModel.signUpInProgress.value) {
             CircularProgressIndicator()
         }
     }
-
 }
+
 fun saveNameToSharedPreferences(context: Context, name: String) {
     val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
     with(sharedPreferences.edit()) {

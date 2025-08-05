@@ -1,5 +1,6 @@
 package com.example.expensestracker.data
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,13 +35,14 @@ import java.time.LocalDate
 
 @Composable
 fun ReportPage(
+    context: Context,
     innerPadding: PaddingValues,
     page: Int,
     recurrence: Recurrence,
     vm: ReportPageViewModel = viewModel(
         key = "$page-${recurrence.name}",
         factory = viewModelFactory {
-            ReportPageViewModel(page, recurrence)
+            ReportPageViewModel(context, page, recurrence)
         })
 )  {
     val uiState = vm.uiState.collectAsState().value

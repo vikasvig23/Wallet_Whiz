@@ -1,5 +1,6 @@
 package com.example.expensestracker.app
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.Crossfade
@@ -17,6 +18,7 @@ import com.example.expensestracker.data.currency
 import com.example.expensestracker.navigation.AppRouter
 import com.example.expensestracker.navigation.Screen
 import com.example.expensestracker.screens.AddCurrency
+import com.example.expensestracker.screens.ForgotPass
 import com.example.expensestracker.screens.HomeScreen
 import com.example.expensestracker.screens.LoginScreen
 import com.example.expensestracker.screens.SignUpScreen
@@ -26,7 +28,7 @@ import com.example.expensestracker.screens.TermsAndCondition
 
 //@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WalletWhiz(homeViewModel: HomeViewModel=viewModel()) {
+fun WalletWhiz(context: Context,homeViewModel: HomeViewModel=viewModel()) {
     homeViewModel.checkForActiveSession()
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -51,10 +53,13 @@ fun WalletWhiz(homeViewModel: HomeViewModel=viewModel()) {
                     LoginScreen()
                 }
                 is Screen.HomeScreen->{
-                    HomeScreen()
+                    HomeScreen(context)
                 }
                 is Screen.SplashScreen->{
                     Splash()
+                }
+                is Screen.ForgotPass->{
+                    ForgotPass()
                 }
               /*  is Screen.CurrencyList->{
                    // val navController = rememberNavController()

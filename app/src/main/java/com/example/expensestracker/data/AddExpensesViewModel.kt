@@ -1,11 +1,20 @@
 package com.example.expensestracker.data
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.expensestracker.db
+
+
 import com.example.expensestracker.db_model.Category
-import com.example.expensestracker.db_model.Expense
+
+import com.example.expensestracker.db_model.ExpensesFb
 import com.example.expensestracker.db_model.Recurrence
+import com.example.expensestracker.navigation.AppRouter
+import com.example.expensestracker.navigation.Screen
+import com.example.expensestracker.utils.PrefDataStore
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
@@ -15,17 +24,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 
 data class AddScreenState(
     val amount: String = "",
     val recurrence: Recurrence = Recurrence.None,
     val date: LocalDate = LocalDate.now(),
+    val time :LocalTime =LocalTime.now(),
     val note: String = "",
     val category: Category? = null,
-         val categories:RealmResults<Category>? = null
+    val categories: List<Category> = emptyList()
        )
 
 class AddExpensesViewModel : ViewModel() {
@@ -36,13 +50,13 @@ class AddExpensesViewModel : ViewModel() {
       //  @RequiresApi(Build.VERSION_CODES.O)
         val uiState: StateFlow<AddScreenState> = _uiState.asStateFlow()
 
-        init {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    categories = db.query<Category>().find()
-                )
-            }
-        }
+//        init {
+//            _uiState.update { currentState ->
+//                currentState.copy(
+//                    categories = db.query<Category>().find()
+//                )
+//            }
+//        }
 
 
 
@@ -64,7 +78,6 @@ class AddExpensesViewModel : ViewModel() {
         }
 
 
-
            fun setRecurrence(recurrence: Recurrence) {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -82,6 +95,13 @@ class AddExpensesViewModel : ViewModel() {
                 )
             }
         }
+    fun setTime(time: LocalTime) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                time = time,
+            )
+        }
+    }
 
       //  @RequiresApi(Build.VERSION_CODES.O)
         fun setNote(note: String) {
@@ -92,41 +112,134 @@ class AddExpensesViewModel : ViewModel() {
             }
         }
 
-        fun setCategory(category: Category) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    category = category,
-                )
-            }
-        }
+    fun loadCategories(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val email = PrefDataStore.getEmail(context)
+            if (email != null) {
+                try {
+                    val snapshot = FirebaseDatabase.getInstance()
+                        .getReference("expenses")
+                        .child(email)
+                        .child("category")
+                        .get()
+                        .await()
 
-    fun submitExpense() {
-        if (_uiState.value.category != null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val now = LocalDateTime.now()
-                db.write {
-                    this.copyToRealm(
-                        Expense(
-                            _uiState.value.amount.toDouble(),
-                            _uiState.value.recurrence,
-                            _uiState.value.date.atTime(now.hour, now.minute, now.second),
-                            _uiState.value.note,
-                            this.query<Category>("id == $0", _uiState.value.category!!.id)
-                                .find().first(),
-                        )
-                    )
-                }
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        amount = "",
-                        recurrence = Recurrence.None,
-                        date = LocalDate.now(),
-                        note = "",
-                        category = null,
-                        categories = null
-                    )
+                    val categories = snapshot.children.mapNotNull {
+                        it.getValue(Category::class.java)
+                    }
+
+                    _uiState.update { currentState ->
+                        currentState.copy(categories = categories)
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("Firebase", "Failed to load categories: ${e.message}")
                 }
             }
         }
     }
+
+
+    fun setCategory(context: Context, target: Category) {
+
+        _uiState.update { currentState ->
+            currentState.copy(category = target)
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val email = PrefDataStore.getEmail(context)
+            if (email != null) {
+                try {
+                    val snapshot = FirebaseDatabase.getInstance()
+                        .getReference("expenses")
+                        .child(email)
+                        .child("category")
+                        .get()
+                        .await()
+
+                    for (child in snapshot.children) {
+                        val categoryFb = child.getValue(Category::class.java)
+                        if (categoryFb?.name == target.name && categoryFb.colorValue == target.colorValue) {
+//                            _uiState.update { currentState ->
+//                                currentState.copy(category = categoryFb)
+//                            }
+                            break
+                        }
+
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("Firebase", "Failed to fetch category: ${e.message}")
+                }
+            }
+        }
+    }
+
+
+
+//    fun Category.toFirebaseMap(): Map<String, Any> {
+//        val colorComponents = this._colorValue.split(",")
+//        return mapOf(
+//            "id" to this.id.toString(),   // convert ObjectId to String
+//            "name" to this.name,
+//            "color" to mapOf(
+//                "red" to colorComponents[0].toFloat(),
+//                "green" to colorComponents[1].toFloat(),
+//                "blue" to colorComponents[2].toFloat()
+//            )
+//        )
+//    }
+
+
+    fun submitExpense(context: Context) {
+        if (_uiState.value.category != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val now = LocalTime.now()
+                val email = PrefDataStore.getEmail(context)
+
+                if (email != null) {
+                    val formattedDate = _uiState.value.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+
+                    val formateTime = _uiState.value.time
+                    val category = _uiState.value.category
+
+                    val expense = ExpensesFb(
+                        amount = _uiState.value.amount.toDouble(),
+                        recurrence = _uiState.value.recurrence,
+                        date =  formattedDate,
+
+                        time = formateTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        note = _uiState.value.note,
+                        category = category!!
+                    )
+
+                    FirebaseDatabase.getInstance()
+                        .getReference("expenses")
+                        .child(email)
+                        .child("expenseList")
+                        .push()
+                        .setValue(expense)
+                        .addOnSuccessListener {
+                            Log.d("Firebase", "Expense saved successfully")
+                            resetUiState()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Firebase", "Failed to save expense: ${e.message}")
+                        }
+                }
+            }
+        }
+    }
+
+    fun resetUiState() {
+        _uiState.value = AddScreenState(
+            amount = "",
+            note = "",
+            date = LocalDate.now(),
+            recurrence = Recurrence.Daily,
+            category = null
+        )
+    }
+
+
 }

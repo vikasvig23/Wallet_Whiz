@@ -1,6 +1,7 @@
 package com.example.expensestracker.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -52,10 +53,10 @@ import com.example.expensestracker.navigation.Screen
 import com.example.expensestracker.ui.theme.TopAppBarBackground
 
 //@RequiresApi(Build.VERSION_CODES.O)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "NewApi")
 @Composable
 
-fun HomeScreen(){
+fun HomeScreen(context: Context){
    /* Surface(
         color = Color.White,
         modifier = Modifier
@@ -110,7 +111,7 @@ fun HomeScreen(){
     ) {
 
 
-        BottomNavGraph(navController = navController)
+        BottomNavGraph(context,navController = navController)
     }
 
 
@@ -358,5 +359,5 @@ fun RowScope.AddItem(
 @Preview
 @Composable
 fun HomeScreenPreview(){
-   HomeScreen()
+ //  HomeScreen()
 }

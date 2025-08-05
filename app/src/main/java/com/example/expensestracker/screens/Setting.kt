@@ -26,18 +26,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.expensestracker.db
+
 import com.example.expensestracker.db_model.Category
-import com.example.expensestracker.db_model.Expense
+
 import com.example.expensestracker.navigation.AppRouter
 import com.example.expensestracker.navigation.Screen
 import com.example.expensestracker.ui.theme.DividerColor
 import com.example.expensestracker.ui.theme.Shapes
+import com.example.expensestracker.utils.PrefDataStore
 import com.google.firebase.auth.FirebaseAuth
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.launch
@@ -46,23 +49,25 @@ import kotlinx.coroutines.launch
 @Composable 
 fun Setting(navController:NavController) {
   //  val navController= rememberNavController()
+    val context = LocalContext.current
+
     val coroutineScope = rememberCoroutineScope()
     var deleteConfirmationShowing by remember {
         mutableStateOf(false)
     }
 
     val eraseAllData: () -> Unit = {
-        coroutineScope.launch {
-            db.write {
-                val expenses = this.query<Expense>().find()
-                val categories = this.query<Category>().find()
-
-                delete(expenses)
-                delete(categories)
-
-                deleteConfirmationShowing = false
-            }
-        }
+//        coroutineScope.launch {
+//            db.write {
+//                val expenses = this.query<Expense>().find()
+//                val categories = this.query<Category>().find()
+//
+//                delete(expenses)
+//                delete(categories)
+//
+//                deleteConfirmationShowing = false
+//            }
+//        }
     }
 
     Scaffold(
@@ -138,9 +143,12 @@ fun Setting(navController:NavController) {
                         label = "LogOut",
                         //isDestructive = true,
                         modifier = Modifier.clickable {
+                          coroutineScope.launch { PrefDataStore.clearEmail(context) }
+                            coroutineScope.launch { PrefDataStore.clearAll(context) }
                             FirebaseAuth.getInstance().signOut()
                             AppRouter.navigateTo(Screen.LoginScreen)
-                        })
+                        }
+                    )
 
 
 

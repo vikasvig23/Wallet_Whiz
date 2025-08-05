@@ -1,5 +1,6 @@
 package com.example.expensestracker.screens
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +39,12 @@ import com.example.expensestracker.ui.theme.Shapes
 
 fun AddExpenses(navController: NavController, vm: AddExpensesViewModel = viewModel()) {
     val state by vm.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        vm.loadCategories(context)
+    }
+
 
 
     val recurrences = listOf(
@@ -111,9 +119,9 @@ fun AddExpenses(navController: NavController, vm: AddExpensesViewModel = viewMod
                             }
                         }
 
-
                     }
                 })
+
                 HorizontalDivider(
                     modifier = Modifier.padding(start = 16.dp),
                     thickness = 1.dp,
@@ -173,9 +181,10 @@ fun AddExpenses(navController: NavController, vm: AddExpensesViewModel = viewMod
                         Text(
                             state.category?.name ?: "Select a category first",
 
-                            color = state.category?.color ?: Color.White
+                            color = state.category?.toColor() ?: Color.White
                         )
                         DropdownMenu(expanded = categoriesMenuOpened,
+
                             onDismissRequest = { categoriesMenuOpened = false }) {
                             state.categories?.forEach { category ->
                                 DropdownMenuItem(text = {
@@ -183,14 +192,14 @@ fun AddExpenses(navController: NavController, vm: AddExpensesViewModel = viewMod
                                         Surface(
                                             modifier = Modifier.size(10.dp),
                                             shape = CircleShape,
-                                            color = category.color
+                                            color = category.toColor()
                                         ) {}
                                         Text(
                                             category.name, modifier = Modifier.padding(start = 8.dp)
                                         )
                                     }
                                 }, onClick = {
-                                    vm.setCategory(category)
+                                    vm.setCategory(context,category)
                                     categoriesMenuOpened = false
                                 })
                             }
@@ -199,7 +208,7 @@ fun AddExpenses(navController: NavController, vm: AddExpensesViewModel = viewMod
                 })
             }
             Button(
-                onClick = vm::submitExpense,
+                onClick = { vm.submitExpense(context) },
                 modifier = Modifier.padding(16.dp),
                 shape = Shapes.large,
                 enabled = state.category != null

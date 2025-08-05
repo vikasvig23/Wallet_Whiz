@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import com.example.expensestracker.R
+import com.example.expensestracker.data.ForgotPassVm
 import com.example.expensestracker.data.currency
 
 sealed class Screen(){
@@ -12,6 +13,7 @@ sealed class Screen(){
     data object LoginScreen:Screen()
     data object HomeScreen :Screen()
     data object SplashScreen :Screen()
+    data object ForgotPass: Screen()
 
 
 

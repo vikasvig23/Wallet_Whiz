@@ -7,7 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.expensestracker.db_model.Expense
+import com.example.expensestracker.db_model.ExpensesFb
+
 import com.example.expensestracker.db_model.Recurrence
 import com.example.expensestracker.db_model.groupedByDayOfMonth
 //import com.example.expensestracker.data.Expense
@@ -25,7 +26,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 @Composable
-fun MonthlyChart(expenses: List<Expense>, month: LocalDate) {
+fun MonthlyChart(expenses: List<ExpensesFb>, month: LocalDate) {
     val groupedExpenses = expenses.groupedByDayOfMonth()
     val numberOfDays = YearMonth.of(month.year, month.month).lengthOfMonth()
 

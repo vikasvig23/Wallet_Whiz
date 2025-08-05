@@ -54,7 +54,6 @@ fun CurrencyList(currency: List<Currencies>,onCurrencySelected: (Currencies) -> 
     LazyColumn(
     ) {
 
-
         items(currency) { item ->
             CurrencyCard(
                 item.country,

@@ -1,5 +1,6 @@
 package com.example.expensestracker.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,7 @@ import com.google.accompanist.pager.HorizontalPager
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
-fun Reports(vm: ReportsViewModel = viewModel()) {
+fun Reports(context: Context,vm: ReportsViewModel = viewModel()) {
     val uiState = vm.uiState.collectAsState().value
 
     val recurrences = listOf(
@@ -78,7 +79,7 @@ fun Reports(vm: ReportsViewModel = viewModel()) {
                 else -> 53
             }
             HorizontalPager(count = numOfPages, reverseLayout = true) { page ->
-                ReportPage(innerPadding, page, uiState.recurrence)
+                ReportPage(context,innerPadding, page, uiState.recurrence)
             }
         }
     )
@@ -87,5 +88,5 @@ fun Reports(vm: ReportsViewModel = viewModel()) {
 @Preview
 @Composable
 fun ReportPreview(){
-    Reports()
+   // Reports()
 }

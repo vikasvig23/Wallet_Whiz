@@ -10,17 +10,28 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.viewModelScope
 import com.example.expensestracker.data.rules.Validator
 import com.example.expensestracker.navigation.AppRouter
 import com.example.expensestracker.navigation.Screen
+import com.example.expensestracker.utils.PrefDataStore
+
+import com.example.expensestracker.utils.SecurePrefsDataStore
 import com.example.expensestracker.utils.Utility
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 
 class SignUpViewModel : ViewModel() {
 
     private val TAG = SignUpViewModel::class.simpleName
+
 
     var registrationUIState = mutableStateOf(RegistrationUIState())
 
@@ -31,64 +42,60 @@ class SignUpViewModel : ViewModel() {
     val messageText = mutableStateOf("")
     val isSuccessMessage = mutableStateOf(true)
 
-    val fields = MutableLiveData<RegistrationUIState>()
-    val _fields: LiveData<RegistrationUIState> = fields
+    private val _fields = MutableStateFlow(RegistrationUIState())
+    val state: StateFlow<RegistrationUIState> = _fields.asStateFlow()
 
 
-
-
-
-
-    fun valid(): Boolean {
-        val name = fields.value?.name ?: ""
-        val email = fields.value?.email ?: ""
-        val pass = fields.value?.password ?: ""
-     //   val policyAccepted = fields.value?.privacyPolicyAccepted ?: false
-
-        return when {
-            name.isBlank() && email.isBlank() && pass.isBlank() -> {
-
-                showAlert("Please fill in all fields", isSuccess =false)
-                false
-            }
-
-            name.isBlank() -> {
-                showAlert("Name is required", isSuccess =false)
-                false
-            }
-
-            email.isBlank() -> {
-                showAlert("Email is required", isSuccess =false)
-                false
-            }
-
-            !Utility.isValidEmail(email) -> {
-                showAlert("Enter a valid email address", isSuccess =false)
-                false
-            }
-
-            pass.isBlank() -> {
-                showAlert("Password is required", isSuccess =false)
-                false
-            }
-
-            pass.length < 6 -> {
-                showAlert("Password must be at least 6 characters", isSuccess =false)
-                false
-            }
-
-//            !policyAccepted -> {
-//                showAlert("Please accept the Terms and Conditions")
-//                false
-//            }
-
-            else -> {
-                // Valid
-                showAlert("All fields are valid!", isSuccess = true)
-                true
-            }
+    fun updateField(field: String, value: String) {
+        _fields.value = when (field) {
+            "email" -> _fields.value.copy(email = value, touched = true)
+            "password" -> _fields.value.copy(password = value, touched = true)
+            "name" -> _fields.value.copy(name = value, touched = true)
+            else -> _fields.value
         }
     }
+
+
+    fun updatePass(password: String) {
+            _fields.value = _fields.value.copy(
+                password = password,
+                touched = true
+            )
+        }
+
+
+        fun updateEmail(email: String) {
+            _fields.value = _fields.value.copy(
+                email = email,
+                touched = true
+            )
+        }
+
+
+    private fun valid(): Boolean {
+        val current = _fields.value
+        return when {
+
+            current.email.isBlank() -> {
+                showAlert("Email is required", false)
+                false
+            }
+            !Utility.isValidEmail(current.email) -> {
+                showAlert("Invalid email", false)
+                false
+            }
+            current.password.isBlank() -> {
+                showAlert("Password is required", false)
+                false
+            }
+            current.password.length < 6 -> {
+                showAlert("Password must be at least 6 characters", false)
+                false
+            }
+            else -> true
+        }
+
+}
 
     private fun showAlert(msg: String, isSuccess: Boolean = true) {
         messageText.value = msg
@@ -160,11 +167,11 @@ class SignUpViewModel : ViewModel() {
         Log.d(TAG,registrationUIState.value.toString())
     }
 
-    fun createUserInFirebase(){
+    fun createUserInFirebase(context: Context){
 
        if (valid()){
            signUpInProgress.value=true
-           registrationUIState.value = fields.value ?: RegistrationUIState()
+           registrationUIState.value = _fields.value ?: RegistrationUIState()
            FirebaseAuth.getInstance()
                .createUserWithEmailAndPassword(
                    registrationUIState.value.email,
@@ -193,6 +200,37 @@ class SignUpViewModel : ViewModel() {
                    showMessageBar.value = true
 
                }
+
+
+                       val name =  registrationUIState.value.name
+                       val email = registrationUIState.value.email ?: return
+
+
+
+                       // Replace '.' with ',' to make it a valid Firebase key
+                       val safeEmail = email.replace(".", ",")
+
+                       val userMap = mapOf(
+
+                           "name" to name
+                       )
+
+                       val dbRef = FirebaseDatabase.getInstance().getReference("expenses")
+                       dbRef.child(safeEmail).setValue(userMap)
+                           .addOnSuccessListener {
+
+                                viewModelScope.launch {
+                                    PrefDataStore.saveEmail(context, safeEmail)
+                                }
+
+                               showAlert("User info saved successfully!", true)
+                           }
+                           .addOnFailureListener { e ->
+                               showAlert("Failed to save user info: ${e.message}", false)
+                           }
+
+
+
        }
 
     }

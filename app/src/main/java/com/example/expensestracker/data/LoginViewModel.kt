@@ -1,16 +1,25 @@
 package com.example.expensestracker.data
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.expensestracker.navigation.AppRouter
 import com.example.expensestracker.navigation.Screen
 import com.example.expensestracker.data.rules.Validator
+import com.example.expensestracker.utils.PrefDataStore
+import com.example.expensestracker.utils.Utility
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class LoginViewModel: ViewModel() {
 
@@ -23,61 +32,91 @@ class LoginViewModel: ViewModel() {
     var loginInProgress = mutableStateOf(false)
 
 
-    fun onEvent(event: LoginUIEvent) {
-        when (event) {
-            is LoginUIEvent.EmailChange -> {
-                loginUIState.value = loginUIState.value.copy(
-                   email = event.email
-                )
-            }
+    val showMessageBar = mutableStateOf(false)
+    val messageText = mutableStateOf("")
+    val isSuccessMessage = mutableStateOf(true)
 
-            is LoginUIEvent.passwordChanged -> {
-                loginUIState.value = loginUIState.value.copy(
-                    password = event.password
-                )
-            }
+    private val _fields = MutableStateFlow(RegistrationUIState())
+    val state: StateFlow<RegistrationUIState> = _fields.asStateFlow()
 
-            is LoginUIEvent.LoginButtonClicked -> {
-                login()
-            }
+
+    fun updateField(field: String, value: String) {
+        _fields.value = when (field) {
+            "email" -> _fields.value.copy(email = value, touched = true)
+            "password" -> _fields.value.copy(password = value, touched = true)
+            else -> _fields.value
         }
-        validateLoginUIDataWithRules()
     }
 
-     private fun login(){
+     fun valid(): Boolean {
+        val current = _fields.value
+        return when {
 
-        loginInProgress.value=true
-        val email=loginUIState.value.email
-        val password=loginUIState.value.password
-     //val context= LocalContext.current
-
-        FirebaseAuth.getInstance()
-            .signInWithEmailAndPassword(email,password)
-            .addOnCompleteListener{
-                loginInProgress.value=false
-                Log.d(TAG,"Inside_Login_successful")
-                Log.d(TAG,"${it.isSuccessful}")
-
-                if(it.isSuccessful){
-                    loginInProgress.value=false
-                    AppRouter.navigateTo(Screen.HomeScreen)
-
-                }
-
-                else{
-                 //   Toast.makeText(this,"something went wrong",Toast.LENGTH_SHORT)
-                }
-
+            current.email.isBlank() -> {
+                showAlert("Email is required", false)
+                false
             }
-            .addOnFailureListener{
-                Log.d(TAG,"Inside_login_failure")
-                Log.d(TAG,"${it.localizedMessage}")
-                loginInProgress.value=false
+            !Utility.isValidEmail(current.email) -> {
+                showAlert("Invalid email", false)
+                false
             }
-
-
+            current.password.isBlank() -> {
+                showAlert("Password is required", false)
+                false
+            }
+            current.password.length < 6 -> {
+                showAlert("Password must be at least 6 characters", false)
+                false
+            }
+            else -> true
+        }
 
     }
+
+    private fun showAlert(msg: String, isSuccess: Boolean = true) {
+        messageText.value = msg
+        isSuccessMessage.value = isSuccess
+        showMessageBar.value = true
+    }
+
+
+
+
+
+
+    fun login(context: Context) {
+
+        val email = _fields.value.email
+        val password = _fields.value.password
+
+        if (email.isNullOrBlank() || password.isNullOrBlank()) {
+            Log.e(TAG, "Email or Password is empty! $email $password")
+            return
+        }
+
+        if (valid()) {
+           // _fields.value = true
+            val safeEmail = email.replace(".", ",")
+            FirebaseAuth.getInstance()
+                .signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener {
+                 //   _fields.value = false
+                    Log.d(TAG, "Inside_Login_successful: ${it.isSuccessful}")
+                    viewModelScope.launch {
+                        PrefDataStore.saveEmail(context, safeEmail)
+                    }
+
+                    if (it.isSuccessful) {
+                        AppRouter.navigateTo(Screen.HomeScreen)
+                    }
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Inside_login_failure: ${it.localizedMessage}")
+                 //   _fields.value = false
+                }
+        }
+    }
+
 
     private fun validateLoginUIDataWithRules() {
         val emailResult = Validator.validateEmail(

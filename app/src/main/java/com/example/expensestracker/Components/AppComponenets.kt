@@ -1,20 +1,29 @@
 package com.example.expensestracker.Components
 
 
+import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,7 +31,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,7 +39,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -63,6 +70,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -79,18 +87,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 import com.example.expensestracker.R
 import com.example.expensestracker.data.NavigationItem
-import com.example.expensestracker.data.SignUpUIEvent
-import com.example.expensestracker.data.SignUpViewModel
 //import com.example.expensestracker.data.Expense
 //import com.example.expensestracker.data.currenccy
-import com.example.expensestracker.data.currency
 import com.example.expensestracker.navigation.BottomBarScreen
 //import com.example.expensestracker.preferences.CurrencyPref
 //import com.example.expensestracker.preferences.MainViewModel
@@ -102,13 +106,23 @@ import com.example.expensestracker.screens.Expenses
 import com.example.expensestracker.screens.Reports
 //import com.example.expensestracker.screens.categories
 import com.example.expensestracker.screens.Setting
-import com.example.expensestracker.screens.saveNameToSharedPreferences
 import com.example.expensestracker.ui.theme.AccentColor
 import com.example.expensestracker.ui.theme.GrayCoor
 import com.example.expensestracker.ui.theme.Primary
 import com.example.expensestracker.ui.theme.Secondary
 import com.example.expensestracker.ui.theme.TextColor
 import kotlinx.coroutines.delay
+
+
+@Composable
+fun HeaderImage(){
+    Image(
+        painter = painterResource(id = R.drawable.wallet_whizz),
+        contentDescription = "",
+      //  modifier = Modifier.align(al)
+
+    )
+}
 
 @Composable
 fun NormalTextComponents(value:String){
@@ -129,18 +143,19 @@ fun NormalTextComponents(value:String){
 }
 
 @Composable
-fun UnderlinedTextComponents(value:String){
+fun UnderlinedTextComponents(value:String, onTextSelected: () -> Unit){
     Text(
         text = value,
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(40.dp),
+            .background(color = Color.Transparent)
+            .heightIn(25.dp)
+        .clickable { onTextSelected() },
         style = TextStyle(
-
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
         ),
-        color = colorResource(id = R.color.colorGray),
+
         textAlign = TextAlign.Center,
         textDecoration = TextDecoration.Underline
 
@@ -167,21 +182,20 @@ fun HeadingTextComponents(value:String){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTextField(
-    labelValue: String, painterResource: Painter,
-    onTextSelected: (String) -> Unit,
-    errorStatus: Boolean=false){
 
-    val textValue= remember {
-        mutableStateOf("")
-    }
+fun MyTextField(
+    labelValue: String,
+    painterResource: Painter,
+    value: String,
+    onTextSelected: (String) -> Unit,
+    errorStatus: Boolean = false
+) {
     OutlinedTextField(
-        modifier= Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clip(shape = MaterialTheme.shapes.small),
-        label ={ Text(text=labelValue) },
-
-        colors= OutlinedTextFieldDefaults.colors(
+        label = { Text(text = labelValue) },
+        colors = OutlinedTextFieldDefaults.colors(
             cursorColor = Primary,
             focusedBorderColor = Primary,
             focusedLabelColor = Primary,
@@ -189,23 +203,14 @@ fun MyTextField(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         singleLine = true,
         maxLines = 1,
-        value=textValue.value,
-        onValueChange ={
-            textValue.value=it
-            onTextSelected(it)
+        value = value,
+        onValueChange = onTextSelected,
+        leadingIcon = {
+            Icon(painter = painterResource, contentDescription = null)
         },
-        leadingIcon={
-            Icon(painter = painterResource, contentDescription ="null" )
-        },
-        isError = !errorStatus)
-    /*ButtonComponent(value = String()) {
-       Button(onClick = { saveTextToSharedPreferences(context, textValue.value) }) {
-        }
-
-     */
-
-    }
-
+        isError =errorStatus
+    )
+}
 
 
 
@@ -267,7 +272,7 @@ fun MyPasswordField(
             }
         },
         visualTransformation = if(passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-        isError = !errorStatus
+        isError = errorStatus
 
     )
 }
@@ -325,7 +330,7 @@ fun ClickableTextComponent(value:String, onTextSelected:(String)->Unit){
 @Composable
 fun ClickableLoginTextComponent(tryingToLogin:Boolean, onTextSelected:(String)->Unit){
     val initialText=if(tryingToLogin)"Already have an Account?" else "Don't have a Account yet?"
-    val LoginText=if(tryingToLogin)"Login" else " Register"
+    val LoginText=if(tryingToLogin)" Login" else " Register"
 
     val annotatedString= buildAnnotatedString {
         append(initialText)
@@ -352,8 +357,8 @@ fun ClickableLoginTextComponent(tryingToLogin:Boolean, onTextSelected:(String)->
                         onTextSelected(span.item)
                     }
                 }
-
-        } )
+        }
+    )
 }
 @Composable
 fun AnimatedMessageBar(
@@ -362,36 +367,63 @@ fun AnimatedMessageBar(
     show: Boolean,
     onDismiss: () -> Unit
 ) {
-    val transition = updateTransition(targetState = show, label = "messageTransition")
-    val offsetY by transition.animateDp(
-        transitionSpec = { tween(durationMillis = 500) },
-        label = "offsetAnimation"
-    ) { visible -> if (visible) 0.dp else (-100).dp }
-
     if (show) {
         LaunchedEffect(Unit) {
             delay(3000)
             onDismiss()
         }
-    }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .offset(y = offsetY)
-            .background(
-                color = if (isSuccess) Color(0xFF4CAF50) else Color(0xFFD32F2F),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(if (isSuccess) Color(0xFF4CAF50) else Color(0xFFD32F2F), shape = RoundedCornerShape(8.dp))
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = message,
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium
             )
-            .padding(16.dp)
-    ) {
-        androidx.compose.material3.Text(
-            text = message,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.Center)
-        )
+        }
     }
 }
+
+@Composable
+fun SlideInToast(
+    message: String,
+    isSuccess: Boolean = true,
+    visible: Boolean
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInHorizontally(
+            initialOffsetX = { -100 }
+        ) + fadeIn(animationSpec = tween(300)),
+        exit = slideOutHorizontally(
+            targetOffsetX = { -100 }
+        ) + fadeOut(animationSpec = tween(300))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .background(
+                    color = if (isSuccess) Color(0xFF4CAF50) else Color(0xFFF44336),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = message,
+                color = Color.White
+            )
+        }
+    }
+}
+
 
 @Composable
 fun AnimatedSwitchButton(
@@ -548,8 +580,9 @@ fun ClickableLoginTextComponent(onTextSelected:(String)->Unit){
 
 //+ "/{currencyCode}"
 //@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BottomNavGraph(navController: NavHostController) {
+fun BottomNavGraph(context: Context,navController: NavHostController) {
     //val currencyPref: CurrencyPref
    // val viewModel:MainViewModel by viewModel()
     NavHost(navController = navController, startDestination = BottomBarScreen.Expense.route) {
@@ -560,7 +593,7 @@ fun BottomNavGraph(navController: NavHostController) {
             }
 
         composable(route=BottomBarScreen.Reports.route){
-            Reports()
+            Reports(context)
         }
         composable(route=BottomBarScreen.Add.route){
            AddExpenses(navController)
