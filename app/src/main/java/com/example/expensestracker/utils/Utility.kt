@@ -1,18 +1,28 @@
 package com.example.expensestracker.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.media.AudioManager
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.border
+
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,12 +36,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -49,6 +62,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import android.graphics.RenderEffect
+import android.graphics.Shader
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.asComposeRenderEffect
 
 object Utility {
 
@@ -63,6 +83,174 @@ object Utility {
         Font(R.font.comfortaa_bold, FontWeight.Medium),
         Font(R.font.comforta_extra_bold, FontWeight.Bold)
     )
+
+
+    fun performHapticAndSound(context: Context) {
+        // Play click sound
+        try {
+            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK)
+        } catch (_: Exception) {}
+
+        // Trigger vibration
+        try {
+            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        50,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            } else {
+                vibrator.vibrate(50)
+            }
+        } catch (_: Exception) {}
+    }
+
+    @Composable
+    fun LiquidGlassCard(
+        modifier: Modifier = Modifier,
+        shape: RoundedCornerShape,
+        blurRadius: Float = 25f,
+        contentPadding: Dp = 16.dp,
+        content: @Composable BoxScope.() -> Unit
+    ) {
+        Box(
+            modifier = modifier.clip(shape)
+        ) {
+
+            // 🔹 Background blur layer (NO text here)
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .graphicsLayer {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            renderEffect =
+                                RenderEffect.createBlurEffect(
+                                    blurRadius,
+                                    blurRadius,
+                                    Shader.TileMode.CLAMP
+                                ).asComposeRenderEffect()
+                        }
+                    }
+                    .background(Color.White.copy(alpha = 0.10f))
+            )
+
+            // 🔹 Glass border + highlight
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .border(
+                        1.dp,
+                        Color.White.copy(alpha = 0.25f),
+                        shape
+                    )
+            )
+
+            // 🔹 CONTENT (NOT blurred)
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .padding(contentPadding),
+                content = content
+            )
+        }
+    }
+
+
+
+    @SuppressLint("ModifierFactoryUnreferencedReceiver")
+    @Composable
+    fun Modifier.backborder(
+        shape: RoundedCornerShape
+    ):Modifier = composed{
+        Modifier
+        .background(
+            Brush.verticalGradient(
+                colors = listOf(
+                    Color.White.copy(alpha = 0.12f),
+                    Color.White.copy(alpha = 0.05f)
+                )
+            )
+        )
+            .border(
+                width = 1.dp,
+                color = Color.White.copy(alpha = 0.2f),
+                shape = shape
+            )
+    }
+
+    @Composable
+    fun Modifier.iosFlowingBorder(
+        shape: Shape,
+        borderWidth: Dp = 1.dp,
+        highlightWidth: Float = 0.15f, // how big the glowing segment is
+        duration: Int = 4000
+    ): Modifier = composed {
+
+        val infiniteTransition = rememberInfiniteTransition(label = "iosBorder")
+        val progress by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(duration, easing = LinearEasing)
+            ),
+            label = "progress"
+        )
+
+        drawWithContent {
+            drawContent()
+
+            val strokePx = borderWidth.toPx()
+
+            // Base static border
+            drawOutline(
+                outline = shape.createOutline(size, layoutDirection, this),
+                color = Color.White.copy(alpha = 0.18f),
+                style = Stroke(strokePx)
+            )
+
+            // Moving highlight
+            val brush = Brush.sweepGradient(
+                colorStops = arrayOf(
+                    0f to Color.Transparent,
+                    progress to Color.Transparent,
+                    (progress + highlightWidth / 2f) to Color.White.copy(alpha = 0.9f),
+                    (progress + highlightWidth) to Color.Transparent,
+                    1f to Color.Transparent
+                ),
+                center = center
+            )
+
+            val outline = shape.createOutline(size, layoutDirection, this)
+
+            when (outline) {
+                is Outline.Rounded -> {
+                    drawPath(
+                        path = Path().apply { addRoundRect(outline.roundRect) },
+                        brush = brush,
+                        style = Stroke(strokePx)
+                    )
+                }
+                is Outline.Generic -> {
+                    drawPath(
+                        path = outline.path,
+                        brush = brush,
+                        style = Stroke(strokePx)
+                    )
+                }
+                is Outline.Rectangle -> {
+                    drawRect(
+                        brush = brush,
+                        style = Stroke(strokePx)
+                    )
+                }
+            }
+        }
+    }
+
+
 
 }
 

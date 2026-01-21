@@ -1,4 +1,4 @@
-package com.example.expensestracker.ui.theme
+package com.example.expensestracker.navigation.ui.theme
 
 import android.print.PrintManager
 import androidx.compose.ui.graphics.Color
@@ -16,6 +16,7 @@ val Secondary=Color(0xFF9DCEFF)
 val TextColor=Color(0xFF1D1617)
 val AccentColor=Color(0xFFC58BF2)
 val GrayCoor=Color(0xFF7B6F72)
+val blue =Color(0XFF3da8ff)
 val WhiteColor=Color(0xFFFFFFFF)
 val BgColor=Color(0xFFF7F8F8)
 val DividerColor = Color(0x20787880)

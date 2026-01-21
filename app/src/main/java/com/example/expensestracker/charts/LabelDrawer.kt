@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.nativeCanvas
 import com.example.expensestracker.db_model.Recurrence
 
-import com.example.expensestracker.ui.theme.LabelSecondary
+import com.example.expensestracker.navigation.ui.theme.LabelSecondary
 import com.github.tehras.charts.piechart.utils.toLegacyInt
 
 class LabelDrawer(val recurrence: Recurrence, private val lastDay: Int? = -1) :

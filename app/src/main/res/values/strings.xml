@@ -26,5 +26,7 @@
     <string name="wallet_disc">A place where you can track your expenses.</string>
     <string name="resetEmail">Send Reset Email</string>
     <string name="frgetPAss">Forgot Password</string>
+    <string name="title_activity_add_budget">AddBudget</string>
+    <string name="enter_budget">Enter Your Budget</string>
 
 </resources>

@@ -44,8 +44,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -55,11 +57,15 @@ import com.example.expensestracker.R
 import com.example.expensestracker.data.CategoriesViewModel
 import com.example.expensestracker.data.CategoriesViewModelFactory
 
-import com.example.expensestracker.ui.theme.BackgroundElevated
-import com.example.expensestracker.ui.theme.Destructive
-import com.example.expensestracker.ui.theme.DividerColor
-import com.example.expensestracker.ui.theme.Shapes
-import com.example.expensestracker.ui.theme.TopAppBarBackground
+import com.example.expensestracker.navigation.ui.theme.BackgroundElevated
+import com.example.expensestracker.navigation.ui.theme.Destructive
+import com.example.expensestracker.navigation.ui.theme.DividerColor
+import com.example.expensestracker.navigation.ui.theme.Shapes
+import com.example.expensestracker.navigation.ui.theme.TopAppBarBackground
+import com.example.expensestracker.screens.ui.theme.DarculaBg
+import com.example.expensestracker.screens.ui.theme.DarculaCard
+import com.example.expensestracker.screens.ui.theme.DarculaMuted
+import com.example.expensestracker.utils.Poppins
 import com.github.skydoves.colorpicker.compose.AlphaTile
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
@@ -85,21 +91,24 @@ fun Categories(
 
     val colorPickerController = rememberColorPickerController()
 
-    Scaffold(topBar = {
-        MediumTopAppBar(title = { Text("Categories") },
+    Scaffold(
+        containerColor = DarculaBg,
+        topBar = {
+        MediumTopAppBar(title = { Text("Categories", style = TextStyle(color =DarculaMuted, fontFamily = Poppins, fontSize = 20.sp )) },
             colors = TopAppBarDefaults.mediumTopAppBarColors(
-                containerColor = TopAppBarBackground
+                containerColor = DarculaCard
             ),
             navigationIcon = {
                 Surface(
                     onClick = navController::popBackStack,
-                    color = Color.Transparent,
+                    color = DarculaCard
+
                 ) {
                     Row(modifier = Modifier.padding(vertical = 10.dp)) {
                         Icon(
                             Icons.AutoMirrored.Rounded.KeyboardArrowLeft, contentDescription = "Settings"
                         )
-                        Text("Settings")
+                        Text("Back", style = TextStyle(fontSize = 15.sp, fontFamily = Poppins, color = DarculaMuted ))
                     }
                 }
             })
@@ -263,7 +272,8 @@ fun Categories(
                 ) {
                     Icon(
                         Icons.AutoMirrored.Rounded.Send,
-                        "Create category"
+                        "Create category",
+                        tint = DarculaMuted
                     )
                 }
             }

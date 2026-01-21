@@ -12,11 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.expensestracker.R
-import com.example.expensestracker.ui.theme.Destructive
-import com.example.expensestracker.ui.theme.TextPrimary
-
+import com.example.expensestracker.navigation.ui.theme.Destructive
+import com.example.expensestracker.navigation.ui.theme.TextPrimary
+import com.example.expensestracker.utils.Utility
+import com.google.crypto.tink.internal.Util
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +50,8 @@ fun TableRow(
         if (label != null) {
             Text(
                 text = label,
+                fontSize = 16.sp,
+                fontFamily = Utility.Poppins,
                 style = MaterialTheme.typography.bodyMedium,
                 color = textColor,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)

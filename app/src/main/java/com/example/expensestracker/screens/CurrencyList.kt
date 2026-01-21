@@ -30,8 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -41,8 +43,13 @@ import com.example.expensestracker.data.CurrencyCard
 import com.example.expensestracker.data.SignUpUIEvent
 import com.example.expensestracker.data.currency
 import com.example.expensestracker.db_model.SharedPreferencesManager
-import com.example.expensestracker.ui.theme.Shapes
-import com.example.expensestracker.ui.theme.TopAppBarBackground
+import com.example.expensestracker.navigation.ui.theme.Shapes
+import com.example.expensestracker.navigation.ui.theme.TopAppBarBackground
+import com.example.expensestracker.screens.ui.theme.DarculaBg
+import com.example.expensestracker.screens.ui.theme.DarculaCard
+import com.example.expensestracker.screens.ui.theme.DarculaMuted
+import com.example.expensestracker.screens.ui.theme.DarculaText
+import com.example.expensestracker.utils.Poppins
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,10 +83,12 @@ fun AddCurrency(navController: NavController){
     }
 
     Scaffold(
+        containerColor = DarculaBg,
         topBar = {
             MediumTopAppBar(title = { Text("Select Currency") },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = TopAppBarBackground
+                    containerColor = DarculaCard,
+                    titleContentColor = DarculaText
                 ),
                 navigationIcon = {
                     Surface(
@@ -88,10 +97,9 @@ fun AddCurrency(navController: NavController){
                     ) {
                         Row(modifier = Modifier.padding(vertical = 10.dp)) {
                             Icon(
-                                Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                                contentDescription = "Settings"
+                                Icons.AutoMirrored.Rounded.KeyboardArrowLeft, contentDescription = "Settings",
                             )
-                            Text("Settings")
+                            Text("Back", style = TextStyle(fontSize = 15.sp, fontFamily = Poppins, color = DarculaMuted ))
                         }
                     }
                 })

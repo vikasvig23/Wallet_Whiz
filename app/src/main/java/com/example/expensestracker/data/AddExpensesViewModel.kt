@@ -2,6 +2,10 @@ package com.example.expensestracker.data
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
@@ -18,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,13 +44,15 @@ data class AddScreenState(
     val time :LocalTime =LocalTime.now(),
     val note: String = "",
     val category: Category? = null,
-    val categories: List<Category> = emptyList()
+    val categories: List<Category> = emptyList(),
        )
 
 class AddExpensesViewModel : ViewModel() {
        // @RequiresApi(Build.VERSION_CODES.O)
         //@RequiresApi(Build.VERSION_CODES.O)
+
         private val _uiState = MutableStateFlow(AddScreenState())
+    val  snackbarHostState: SnackbarHostState = SnackbarHostState()
 
       //  @RequiresApi(Build.VERSION_CODES.O)
         val uiState: StateFlow<AddScreenState> = _uiState.asStateFlow()
@@ -191,14 +198,59 @@ class AddExpensesViewModel : ViewModel() {
 //    }
 
 
+
+    fun valid(
+    ):Boolean{
+
+        val current = _uiState.value
+        return  when{
+            current.amount.isBlank()->{
+                viewModelScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Amount field is empty",
+                        withDismissAction = true
+                    )
+                }
+                false
+            }
+            current.note.isBlank()->{
+                viewModelScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Add a note",
+                        withDismissAction = true
+                    )
+                }
+                false
+            }
+            current.category == null
+                ->{
+                viewModelScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Please select a category or add from Setting section.",
+                        withDismissAction = true
+                    )
+                }
+                false
+            }
+
+            else -> true
+        }
+
+
+    }
+
     fun submitExpense(context: Context) {
-        if (_uiState.value.category != null) {
+        if (valid()){
+
+
+        if (_uiState.value.category != null ) {
             viewModelScope.launch(Dispatchers.IO) {
                 val now = LocalTime.now()
                 val email = PrefDataStore.getEmail(context)
 
                 if (email != null) {
-                    val formattedDate = _uiState.value.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    val formattedDate =
+                        _uiState.value.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
 
                     val formateTime = _uiState.value.time
                     val category = _uiState.value.category
@@ -206,8 +258,7 @@ class AddExpensesViewModel : ViewModel() {
                     val expense = ExpensesFb(
                         amount = _uiState.value.amount.toDouble(),
                         recurrence = _uiState.value.recurrence,
-                        date =  formattedDate,
-
+                        date = formattedDate,
                         time = formateTime.format(DateTimeFormatter.ofPattern("HH:mm")),
                         note = _uiState.value.note,
                         category = category!!
@@ -225,11 +276,12 @@ class AddExpensesViewModel : ViewModel() {
                         }
                         .addOnFailureListener { e ->
                             Log.e("Firebase", "Failed to save expense: ${e.message}")
-                        }
+                        }   
                 }
             }
         }
-    }
+        }
+  }
 
     fun resetUiState() {
         _uiState.value = AddScreenState(

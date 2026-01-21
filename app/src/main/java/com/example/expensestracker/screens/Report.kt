@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +29,7 @@ import com.example.expensestracker.R
 import com.example.expensestracker.data.ReportPage
 import com.example.expensestracker.data.ReportsViewModel
 import com.example.expensestracker.db_model.Recurrence
+import com.example.expensestracker.screens.ui.theme.DarculaBg
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 
@@ -43,34 +45,9 @@ fun Reports(context: Context,vm: ReportsViewModel = viewModel()) {
     )
 
     Scaffold(
-        topBar = {
-            MediumTopAppBar(
-                title = { Text("Reports") },
-                colors = topAppBarColors(
-                    containerColor = Color.LightGray,
-                    titleContentColor = Color.Black,
-                ),
-                actions = {
-                    IconButton(onClick = vm::openRecurrenceMenu) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_today),
-                            contentDescription = "Change recurrence"
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = uiState.recurrenceMenuOpened,
-                        onDismissRequest = vm::closeRecurrenceMenu
-                    ) {
-                        recurrences.forEach { recurrence ->
-                            DropdownMenuItem(text = { Text(recurrence.name) }, onClick = {
-                                vm.setRecurrence(recurrence)
-                                vm.closeRecurrenceMenu()
-                            })
-                        }
-                    }
-                }
-            )
-        },
+        containerColor = DarculaBg,
+      //  Modifier.background(color = colorResource(R.color.lightBlue)),
+
         content = { innerPadding ->
             val numOfPages = when (uiState.recurrence) {
                 Recurrence.Weekly -> 53

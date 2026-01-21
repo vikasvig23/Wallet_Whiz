@@ -5,26 +5,40 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults.containerColor
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +48,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,73 +67,117 @@ import com.example.expensestracker.Components.BottomNavGraph
 import com.example.expensestracker.R
 import com.example.expensestracker.navigation.BottomBarScreen
 import com.example.expensestracker.navigation.Screen
-import com.example.expensestracker.ui.theme.TopAppBarBackground
+import com.example.expensestracker.navigation.ui.theme.TopAppBarBackground
+import com.example.expensestracker.navigation.ui.theme.blue
+import com.example.expensestracker.screens.ui.theme.DarculaBg
+import com.example.expensestracker.utils.Utility
+import com.example.expensestracker.utils.Utility.backborder
+import java.util.Locale
 
 //@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "NewApi")
 @Composable
 
-fun HomeScreen(context: Context){
-   /* Surface(
-        color = Color.White,
+fun HomeScreen() {
+    val context = LocalContext.current
+    val navController = rememberNavController()
+
+    Scaffold(
+      //  topBar = { TopBar() },
+        containerColor = DarculaBg,
+        bottomBar = { BottomBar(navController = navController) }
+    ) { innerPadding ->
+        BottomNavGraph(context, navController = navController)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(){
+   Scaffold(
+       topBar =
+       {
+
+               CenterAlignedTopAppBar(
+
+                   colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                       containerColor = Color.White,
+
+                   ),
+                   title = {
+                       Image(
+                           painter = painterResource(id = R.drawable.wallethome), // your drawable here
+                           contentDescription = "App Logo",
+
+                       )
+                   },
+//                   navigationIcon = {
+//                       IconButton(onClick = { /* do something */ }) {
+//                           Icon(
+//                               imageVector = Icons.AutoMirrored.Filled.List,
+//                               contentDescription = "Localized description",
+//                               modifier = Modifier.size(50.dp
+//                               )
+//                           )
+//                       }
+//                   },
+               )
+
+       }
+   ){
+
+   }
+}
+@Composable
+fun ReliveTopNavigation() {
+    Row(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.LightGray)
-            .padding(28.dp)
-
-    ){
-
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.LightGray)
-            .padding(0.dp, 20.dp)) {
-            HeadingTextComponents(value = "Home")
-
-            ButtonComponent(value = stringResource(R.string.logout), onButtonClicked = {
-                loginViewModel.logout()
-            },
-                isEnabled = true
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Home / Summary
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Default.Home,
+                contentDescription = "Summary",
+                tint = Color.Black
             )
-
-
+            Text(
+                text = "Summary",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.Black
+            )
         }
-        } */
 
- /*   val navController=rememberNavController()
+        // Stats
+        Icon(
+            painter = painterResource(id = R.drawable.upload), // replace with your drawable
+            contentDescription = "Stats",
+            tint = Color.Black
+        )
 
-    Scaffold(
-            bottomBar={ BottomBar(navController=navController)}
+        // Challenges / Trophy
+        Icon(
+            painter = painterResource(id = R.drawable.bar_chart), // replace with your drawable
+            contentDescription = "Challenges",
+            tint = Color.Black
+        )
 
-    ) {
-
-        BottomNavGraph(navController = navController)
-
+        // Profile / People
+        Icon(
+            painter = painterResource(id = R.drawable.add), // replace with your drawable
+            contentDescription = "Profile",
+            tint = Color.Black
+        )
     }
-
-}*/
-
+}
 
 
-
-
-
-    val navController=rememberNavController()
-
-
-  //  homeViewModel.getUserData()
-
-    Scaffold(
-        bottomBar={ BottomBar(navController=navController)}
-
-    ) {
-
-
-        BottomNavGraph(context,navController = navController)
-    }
-
-
-
-        }
 
 @Composable
 fun BottomBar(navController: NavHostController) {
@@ -125,36 +186,48 @@ fun BottomBar(navController: NavHostController) {
         BottomBarScreen.Reports,
         BottomBarScreen.Add,
         BottomBarScreen.Setting
-
     )
+
     var showBottomBar by rememberSaveable { mutableStateOf(true) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-     showBottomBar=when(navBackStackEntry?.destination?.route){
-        "setting/categories"->false
-         else ->true
+    showBottomBar = when (navBackStackEntry?.destination?.route) {
+        "setting/categories" -> false
+        else -> true
     }
-    NavigationBar {
-        Row(
+
+    if (showBottomBar) {
+        NavigationBar(
             modifier = Modifier
-                .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 8.dp)
-                .background(Color.Transparent)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(start = 18.dp, end = 18.dp,  bottom = 10.dp) // space around bar
+                .height(65.dp)
+                .clip(RoundedCornerShape(50.dp)) // round corners
+                .backborder(shape = RoundedCornerShape(50.dp)), // background after clip
+            containerColor = Color.Transparent, // avoid overriding background
+            contentColor = Color.White,
+            tonalElevation = 4.dp // small shadow/elevation
         ) {
-            screens.forEach { screen ->
-                AddItem(
-                    screen = screen,
-                    currentDestination = currentDestination,
-                    navController = navController
-                )
+            Row(
+                modifier = Modifier
+                   // .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 8.dp)
+                    .fillMaxWidth(),
+
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                screens.forEach { screen ->
+                    AddItem(
+                        screen = screen,
+                        currentDestination = currentDestination,
+                        navController = navController
+                    )
+                }
             }
         }
+
     }
 }
-
 
 
 @Composable
@@ -165,33 +238,11 @@ fun RowScope.AddItem(
 ) {
     val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
     val contentColor =
-        if (selected) Color.White else Color.Black
+        if (selected)   Color(0xFFE0D7FF)  else Color(0xFF9E9E9E)
     val background =
-        if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else Color.Transparent
+        if (selected) Color(0xFF6E5FD9).copy(alpha = 0.18f) else Color.Transparent
 
-/*
-    NavigationBarItem(
-        label = {
-            Text(text = screen.title)
-        },
-        icon = {
-            Icon(
-                imageVector = screen.icon,
-                contentDescription = "Navigation Icon"
-            )
-        },
-        selected = currentDestination?.hierarchy?.any {
-            it.route == screen.route
-        } == true,
-        //unselectedContentColor = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
-        onClick = {
-            navController.navigate(screen.route) {
-                popUpTo(navController.graph.findStartDestination().id)
-                launchSingleTop = true
-            }
-        }
 
-    )*/
     Box(
         modifier = Modifier
             .height(40.dp)
@@ -219,6 +270,7 @@ fun RowScope.AddItem(
             AnimatedVisibility(visible = selected) {
                 Text(
                     text = screen.title,
+                    fontFamily = Utility.Poppins,
                     color = contentColor
                 )
             }
@@ -359,5 +411,6 @@ fun RowScope.AddItem(
 @Preview
 @Composable
 fun HomeScreenPreview(){
- //  HomeScreen()
+
+   HomeScreen()
 }

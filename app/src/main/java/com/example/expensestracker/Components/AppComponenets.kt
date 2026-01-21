@@ -106,11 +106,15 @@ import com.example.expensestracker.screens.Expenses
 import com.example.expensestracker.screens.Reports
 //import com.example.expensestracker.screens.categories
 import com.example.expensestracker.screens.Setting
-import com.example.expensestracker.ui.theme.AccentColor
-import com.example.expensestracker.ui.theme.GrayCoor
-import com.example.expensestracker.ui.theme.Primary
-import com.example.expensestracker.ui.theme.Secondary
-import com.example.expensestracker.ui.theme.TextColor
+import com.example.expensestracker.navigation.ui.theme.AccentColor
+import com.example.expensestracker.navigation.ui.theme.GrayCoor
+import com.example.expensestracker.navigation.ui.theme.Primary
+import com.example.expensestracker.navigation.ui.theme.Secondary
+import com.example.expensestracker.navigation.ui.theme.TextColor
+import com.example.expensestracker.screens.ui.theme.DarculaCard
+import com.example.expensestracker.screens.ui.theme.DarculaMuted
+import com.example.expensestracker.screens.ui.theme.DarculaText
+import com.example.expensestracker.utils.Poppins
 import kotlinx.coroutines.delay
 
 
@@ -172,8 +176,9 @@ fun HeadingTextComponents(value:String){
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal,
+            fontFamily = Poppins
         ),
-        color = colorResource(id = R.color.black),
+        color = colorResource(id = R.color.white),
        // textAlign = TextAlign.Center
 
     )
@@ -193,12 +198,23 @@ fun MyTextField(
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape = MaterialTheme.shapes.small),
-        label = { Text(text = labelValue) },
+            .clip(shape = MaterialTheme.shapes.small)
+        ,
+
+        label = { Text(text = labelValue, fontFamily = Poppins) },
         colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = DarculaText,
+            unfocusedTextColor = DarculaText,
             cursorColor = Primary,
+
             focusedBorderColor = Primary,
+            unfocusedBorderColor = DarculaMuted,
+
             focusedLabelColor = Primary,
+            unfocusedLabelColor = DarculaMuted,
+
+            errorTextColor = Color.Red,
+            errorBorderColor = Color.Red
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         singleLine = true,
@@ -206,7 +222,7 @@ fun MyTextField(
         value = value,
         onValueChange = onTextSelected,
         leadingIcon = {
-            Icon(painter = painterResource, contentDescription = null)
+            Icon(painter = painterResource, tint = DarculaMuted, contentDescription = null)
         },
         isError =errorStatus
     )
@@ -231,12 +247,21 @@ fun MyPasswordField(
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape = MaterialTheme.shapes.small),
-        label = { Text(text = labelValue) },
+        label = { Text(text = labelValue,fontFamily = Poppins) },
 
         colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = DarculaText,
+            unfocusedTextColor = DarculaText,
             cursorColor = Primary,
+
             focusedBorderColor = Primary,
+            unfocusedBorderColor = DarculaMuted,
+
             focusedLabelColor = Primary,
+            unfocusedLabelColor = DarculaMuted,
+
+            errorTextColor = Color.Red,
+            errorBorderColor = Color.Red
 
 
             ),
@@ -255,7 +280,7 @@ fun MyPasswordField(
             onTextSelected(it)
         },
         leadingIcon = {
-            Icon(painter = painterResource, contentDescription = "")
+            Icon(painter = painterResource,tint = DarculaMuted, contentDescription = "")
         },
         trailingIcon = {
             val iconImage = if (passwordVisible.value) {
@@ -346,7 +371,8 @@ fun ClickableLoginTextComponent(tryingToLogin:Boolean, onTextSelected:(String)->
             fontSize = 21.sp,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = DarculaText
         ),
         text = annotatedString, onClick ={ offset->
             annotatedString.getStringAnnotations(offset,offset)
@@ -532,7 +558,8 @@ fun DividerTextComponent(){
             color = GrayCoor
         )
         Text(modifier = Modifier.padding(8.dp), text= stringResource(R.string.or),
-            fontSize=18.sp, color= TextColor)
+            fontSize=18.sp, color= TextColor
+        )
         HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
@@ -649,7 +676,6 @@ fun NavigationDrawerBody(navigationDrawerItems: List<NavigationItem>,
 fun NavigationItemRow(item: NavigationItem,
                       onNavigationItemClicked:(NavigationItem) -> Unit) {
 
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -671,6 +697,8 @@ fun NavigationItemRow(item: NavigationItem,
 
     }
 }
+
+
 
 @Composable
 fun NavigationDrawerText(title: String, textUnit: TextUnit, color: Color) {

@@ -57,6 +57,7 @@ import com.example.expensestracker.R
 import com.example.expensestracker.data.RegistrationUIState
 import com.example.expensestracker.data.SignUpViewModel
 import com.example.expensestracker.data.SignUpUIEvent
+import com.example.expensestracker.screens.ui.theme.DarculaBg
 import com.example.expensestracker.utils.Utility
 
 
@@ -93,13 +94,13 @@ fun SignUpScreen(loginViewModel: SignUpViewModel = viewModel()) {
             color = Color.White,
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(DarculaBg)
                 .padding(start = 28.dp, end = 28.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(DarculaBg)
 
             ) {
                 Image(
@@ -192,9 +193,9 @@ fun saveNameToSharedPreferences(context: Context, name: String) {
     }
 }
 
-//@Preview
-//@Composable
-//fun DefaultPreviewOfSignUpScreen() {
-//    SignUpScreen()
-//}
+@Preview
+@Composable
+fun DefaultPreviewOfSignUpScreen() {
+    SignUpScreen()
+}
 

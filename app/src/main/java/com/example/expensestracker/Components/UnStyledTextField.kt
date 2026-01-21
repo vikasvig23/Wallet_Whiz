@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.expensestracker.ui.theme.Primary
-import com.example.expensestracker.ui.theme.TextPrimary
+import com.example.expensestracker.navigation.ui.theme.Primary
+import com.example.expensestracker.navigation.ui.theme.TextPrimary
 import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)

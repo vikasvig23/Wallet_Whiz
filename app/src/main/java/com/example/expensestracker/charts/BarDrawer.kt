@@ -7,12 +7,14 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.github.tehras.charts.bar.BarChartData
 import com.example.expensestracker.db_model.Recurrence
 
-import com.example.expensestracker.ui.theme.SystemGray04
+import com.example.expensestracker.navigation.ui.theme.SystemGray04
+import com.example.expensestracker.navigation.ui.theme.blue
 
 class BarDrawer constructor(recurrence: Recurrence) :
     com.github.tehras.charts.bar.renderer.bar.BarDrawer {
     private val barPaint = Paint().apply {
         this.isAntiAlias = true
+
     }
 
     private val rightOffset = when(recurrence) {
@@ -36,7 +38,7 @@ class BarDrawer constructor(recurrence: Recurrence) :
             16f,
             16f,
             barPaint.apply {
-                color = SystemGray04
+                color = blue
             },
         )
         canvas.drawRoundRect(

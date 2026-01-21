@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +39,7 @@ import com.example.expensestracker.navigation.AppRouter
 import com.example.expensestracker.navigation.Screen
 import com.example.expensestracker.R
 import com.example.expensestracker.data.LoginViewModel
+import com.example.expensestracker.screens.ui.theme.DarculaBg
 import com.example.expensestracker.utils.Utility
 
 @Composable
@@ -51,9 +53,11 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
 
 
     Box(
+
         modifier = Modifier
             .fillMaxWidth()
-            .zIndex(1f),
+            .zIndex(1f)
+        ,
         contentAlignment = Alignment.Center
     ) {
         AnimatedMessageBar(
@@ -71,17 +75,18 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
         }
 
         Surface(
-            color = Color.White,
+
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(DarculaBg)
                 .padding(start = 28.dp, end = 28.dp)
 
         ) {
             Column(
+
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White)
+                    .background(DarculaBg)
 
             ) {
 
@@ -96,6 +101,7 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
                 Spacer(modifier = Modifier.padding(10.dp))
                 MyTextField(
                     labelValue = stringResource(id = R.string.email),
+
                     painterResource = painterResource(id = R.drawable.mail),
                     value = state.email,
                     onTextSelected = { mail ->

@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.expensestracker.db_model.Category
-import com.example.expensestracker.ui.theme.Shapes
+import com.example.expensestracker.navigation.ui.theme.Shapes
 import com.example.expensestracker.utils.Utility
 
 @Composable

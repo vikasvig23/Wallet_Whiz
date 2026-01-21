@@ -14,6 +14,7 @@ sealed class Screen(){
     data object HomeScreen :Screen()
     data object SplashScreen :Screen()
     data object ForgotPass: Screen()
+    data object  AddBudget:Screen()
 
 
 
@@ -45,8 +46,9 @@ sealed class BottomBarScreen(
     val route:String,
     val title: String,
     val icon:Int,
-    val icon_focused: Int
+    val icon_focused: Int,
 ){
+
     data object Expense:BottomBarScreen(
         route ="expenses",
         title = "Expenses",
@@ -61,7 +63,7 @@ sealed class BottomBarScreen(
     )
     data object Add:BottomBarScreen(
         route="add",
-        title = "Add",
+        title = "Add Expenses",
         icon = R.drawable.add,
         icon_focused =  R.drawable.add_light
     )
@@ -71,8 +73,7 @@ sealed class BottomBarScreen(
         icon = R.drawable.settings_outlined,
         icon_focused =  R.drawable.setting_light
     )
-
-
+    
 }
 
 

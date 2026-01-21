@@ -186,7 +186,7 @@ class SignUpViewModel : ViewModel() {
                        messageText.value = "Registration successful!"
                        isSuccessMessage.value = true
                        showMessageBar.value = true
-                       AppRouter.navigateTo(Screen.HomeScreen)
+                       AppRouter.navigateTo(Screen.AddBudget)
                    } else {
                        messageText.value = "Registration failed!"
                        isSuccessMessage.value = false

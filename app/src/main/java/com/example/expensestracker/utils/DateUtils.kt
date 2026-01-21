@@ -22,11 +22,21 @@ fun LocalDate.formatDay(): String {
 
 fun LocalDateTime.formatDayForRange(): String {
     val today = LocalDateTime.now()
-    val yesterday = today.minusDays(1)
 
-    return when {
-        this.year != today.year -> this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-        else -> this.format(DateTimeFormatter.ofPattern("dd MMM"))
+    return if (this.year != today.year) {
+        this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+    } else {
+        this.format(DateTimeFormatter.ofPattern("dd MMM"))
+    }
+}
+
+fun LocalDate.formatDayForRange(): String {
+    val today = LocalDate.now()
+
+    return if (this.year != today.year) {
+        this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+    } else {
+        this.format(DateTimeFormatter.ofPattern("dd MMM"))
     }
 }
 
@@ -55,14 +65,15 @@ fun calculateDateRange(recurrence: Recurrence, page: Int): DateRangeData {
             daysInRange = 7
         }
         Recurrence.Monthly -> {
-            start =
-                LocalDate.of(today.year, today.month, 1)
-                    .minusMonths(page.toLong())
-            val numberOfDays =
-                YearMonth.of(start.year, start.month).lengthOfMonth()
-            end = start.plusDays(numberOfDays.toLong())
+            start = LocalDate.of(today.year, today.month, 1)
+                .minusMonths(page.toLong())
+
+            val numberOfDays = YearMonth.of(start.year, start.month).lengthOfMonth()
+
+            end = start.plusDays(numberOfDays.toLong() - 1) // Correct last day of month
             daysInRange = numberOfDays
         }
+
         Recurrence.Yearly -> {
             start = LocalDate.of(today.year, 1, 1)
             end = LocalDate.of(today.year, 12, 31)

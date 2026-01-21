@@ -17,6 +17,7 @@ import com.example.expensestracker.data.HomeViewModel
 import com.example.expensestracker.data.currency
 import com.example.expensestracker.navigation.AppRouter
 import com.example.expensestracker.navigation.Screen
+import com.example.expensestracker.screens.AddBudget
 import com.example.expensestracker.screens.AddCurrency
 import com.example.expensestracker.screens.ForgotPass
 import com.example.expensestracker.screens.HomeScreen
@@ -24,6 +25,8 @@ import com.example.expensestracker.screens.LoginScreen
 import com.example.expensestracker.screens.SignUpScreen
 import com.example.expensestracker.screens.Splash
 import com.example.expensestracker.screens.TermsAndCondition
+import com.example.expensestracker.screens.ui.theme.DarculaBg
+
 //import com.example.expensestracker.screens.Categories
 
 //@RequiresApi(Build.VERSION_CODES.O)
@@ -32,7 +35,7 @@ fun WalletWhiz(context: Context,homeViewModel: HomeViewModel=viewModel()) {
     homeViewModel.checkForActiveSession()
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.LightGray
+        color = DarculaBg
     ) {
 
         if(homeViewModel.isUserLoggedIn.value==true){
@@ -53,13 +56,16 @@ fun WalletWhiz(context: Context,homeViewModel: HomeViewModel=viewModel()) {
                     LoginScreen()
                 }
                 is Screen.HomeScreen->{
-                    HomeScreen(context)
+                    HomeScreen()
                 }
                 is Screen.SplashScreen->{
                     Splash()
                 }
                 is Screen.ForgotPass->{
                     ForgotPass()
+                }
+                is Screen.AddBudget->{
+                    AddBudget()
                 }
               /*  is Screen.CurrencyList->{
                    // val navController = rememberNavController()

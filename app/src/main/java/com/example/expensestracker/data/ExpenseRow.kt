@@ -10,13 +10,15 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.expensestracker.R
 import com.example.expensestracker.db_model.ExpensesFb
 
 import com.example.expensestracker.db_model.SharedPreferencesManager
 import com.example.expensestracker.db_model.getParsedDate
-import com.example.expensestracker.ui.theme.LabelSecondary
-import com.example.expensestracker.ui.theme.Typography
+import com.example.expensestracker.navigation.ui.theme.LabelSecondary
+import com.example.expensestracker.navigation.ui.theme.Typography
+import com.example.expensestracker.screens.ui.theme.DarculaText
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 @Composable
@@ -38,13 +40,17 @@ fun ExpenseRow(expense: ExpensesFb, modifier: Modifier = Modifier) {
         ) {
             Text(
                 expense.note ?: expense.category?.name.orEmpty(),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
+                color = DarculaText,
                         fontFamily = Poppins,
+                fontSize = 22.sp,
             )
             Text(
                 "$selectedCurrency ${DecimalFormat("0.#").format(expense.amount)}",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
+                color = DarculaText,
                 fontFamily = Poppins,
+                fontSize = 22.sp,
             )
         }
         Row(
@@ -60,7 +66,7 @@ fun ExpenseRow(expense: ExpensesFb, modifier: Modifier = Modifier) {
                 expense.time,
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = Poppins,
-                color = LabelSecondary
+                color = DarculaText
             )
 
         }

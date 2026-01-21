@@ -9,12 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 import com.example.expensestracker.db_model.DayExpenses
 import com.example.expensestracker.db_model.SharedPreferencesManager
-import com.example.expensestracker.ui.theme.LabelSecondary
+import com.example.expensestracker.navigation.ui.theme.LabelSecondary
+import com.example.expensestracker.screens.ui.theme.DarculaMuted
+import com.example.expensestracker.screens.ui.theme.DarculaText
 import com.example.expensestracker.utils.Utility
 import com.example.expensestracker.utils.formatDay
 import java.text.DecimalFormat
@@ -34,25 +38,26 @@ fun ExpensesDayGroup(
                 date.formatDay(),
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = Utility.Poppins,
-                color = LabelSecondary
+                color = DarculaText
             )
-            HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 4.dp))
+            HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 4.dp), color = DarculaMuted)
             it.expenses.forEach { expense ->
                 ExpenseRow(
                     expense = expense,
                     modifier = Modifier.padding(top = 12.dp)
                 )
             }
-            HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 4.dp))
+            HorizontalDivider(modifier = Modifier.padding(top = 16.dp, bottom = 4.dp), color = DarculaMuted)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Total :", style = MaterialTheme.typography.headlineSmall, fontFamily = Utility.Poppins, color = Color.Black)
+                Text("Total ", style = MaterialTheme.typography.headlineSmall, fontFamily = Utility.Poppins, color = DarculaText,fontSize = 22.sp,)
                 Text(
                     DecimalFormat("$selectedCurrency 0.#").format(it.total),
                     style = MaterialTheme.typography.headlineSmall,
-                    color = Color.Black,
+                    color = DarculaText,
+                    fontSize = 22.sp,
                     fontFamily = Utility.Poppins
                 )
             }

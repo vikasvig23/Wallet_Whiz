@@ -41,8 +41,8 @@ import com.example.expensestracker.data.CurrencyCard
 import com.example.expensestracker.data.SignUpUIEvent
 import com.example.expensestracker.data.currency
 import com.example.expensestracker.db_model.SharedPreferencesManager
-import com.example.expensestracker.ui.theme.Shapes
-import com.example.expensestracker.ui.theme.TopAppBarBackground
+import com.example.expensestracker.navigation.ui.theme.Shapes
+import com.example.expensestracker.navigation.ui.theme.TopAppBarBackground
 
 
 @OptIn(ExperimentalMaterial3Api::class)

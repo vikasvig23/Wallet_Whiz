@@ -1,9 +1,10 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id ("io.realm.kotlin")
+   // id ("io.realm.kotlin")
     id("com.google.gms.google-services")
-    id ("kotlin-kapt")
+  //  id ("kotlin-kapt")
+    id("org.jetbrains.kotlin.plugin.compose")
     //id ("com.google.dagger.hilt.android")
 }
 
@@ -22,7 +23,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
     }
 
     buildTypes {
@@ -36,17 +36,20 @@ android {
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
+        freeCompilerArgs = freeCompilerArgs + listOf("-Xjvm-default=all")
     }
+
+
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.12"
     }
     packaging {
         resources {
@@ -67,6 +70,8 @@ dependencies {
         implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
         implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
 
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
+
    // implementation ("com.android.support:multidex:2.0.1")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation(platform("androidx.compose:compose-bom:2024.01.00"))
@@ -84,8 +89,13 @@ dependencies {
    implementation(platform("androidx.compose:compose-bom:2024.01.00"))
     implementation(platform("androidx.compose:compose-bom:2024.01.00"))
     implementation ("com.github.skydoves:colorpicker-compose:1.0.0")
-    implementation("com.google.firebase:firebase-database-ktx:21.0.0")
 
+//    implementation ("com.patrykandpatrick.vico:core:2.0.0-beta.2")
+//
+//    implementation ("com.patrykandpatrick.vico:compose:2.0.0-beta.2")
+    implementation("com.google.firebase:firebase-database-ktx:21.0.0")
+    implementation("androidx.test.services:storage:1.4.2")
+    implementation ("com.github.tehras:charts:0.2.4-alpha")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -122,8 +132,8 @@ dependencies {
     implementation ("io.github.serpro69:kotlin-faker:1.13.0")
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
     //implementation ("com.google.dagger:dagger:2.44")
-    implementation ("com.google.dagger:hilt-android:2.44")
-    annotationProcessor ("com.google.dagger:hilt-compiler:2.44")
+//    implementation("com.google.dagger:hilt-android:2.44")
+//    kapt("com.google.dagger:hilt-compiler:2.44")
     implementation ("androidx.core:core-splashscreen:1.0.1")
 
 
@@ -132,6 +142,10 @@ dependencies {
 
     
 }
+
+
+
+
 //hilt {
 //    enableAggregatingTask = true
 //}

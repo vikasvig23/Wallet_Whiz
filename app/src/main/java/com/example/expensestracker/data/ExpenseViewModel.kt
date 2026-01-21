@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.fragment.app.strictmode.SetRetainInstanceUsageViolation
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
@@ -44,7 +44,6 @@ class ExpensesViewModel: ViewModel() {
     private val expeneData = MutableStateFlow(String())
     val _expenseData:StateFlow<String>  = expeneData.asStateFlow()
 
-
     suspend fun setRecurrence(context: Context, recurrence: Recurrence) {
         val savedEmail = PrefDataStore.getEmail(context) ?: return
 
@@ -74,7 +73,6 @@ class ExpensesViewModel: ViewModel() {
                         || expenseDate.isEqual(end)
             }
 
-
             val sumTotal = filteredExpenses.sumOf { it.amount }
 
             _uiState.update { currentState ->
@@ -102,6 +100,7 @@ class ExpensesViewModel: ViewModel() {
                     .child(savedEmail)
                     .get()
                     .await()
+
 
                 val nameValue = snapshot.child("name").getValue(String::class.java)
 

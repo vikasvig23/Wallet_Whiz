@@ -25,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensestracker.screens.ui.theme.DarculaCard
+import com.example.expensestracker.screens.ui.theme.DarculaText
 
 //import com.example.expensestracker.navigation.CurrencyScreen
 
@@ -47,6 +49,7 @@ fun CurrencyCard(
     var selectedItem by remember { mutableStateOf(false) }
 //    var selectedItem by remember { mutableStateOf<String?>(null) }
     Card(
+
         modifier = Modifier
             // The space between each card and the other
             .padding(10.dp)
@@ -62,7 +65,7 @@ fun CurrencyCard(
         //onClick = { if(expanded){AppRouter.navigateTo(Screen.HomeScreen)}},
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(15.dp),
-        colors =  CardDefaults.cardColors(MaterialTheme.colorScheme.surface)
+        colors =  CardDefaults.cardColors(DarculaCard)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically)
         {
@@ -72,7 +75,7 @@ fun CurrencyCard(
                 Text(
                     text = country,
                     fontSize = 22.sp,
-                    color = Color.Black,
+                    color = DarculaText,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(8.dp)
@@ -87,9 +90,7 @@ fun CurrencyCard(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth(),
-                    color = Color.Black,
-
-
+                    color = DarculaText,
                 )
             }
          
