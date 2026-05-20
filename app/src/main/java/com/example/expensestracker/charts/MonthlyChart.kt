@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,9 +52,11 @@ import com.example.expensestracker.db_model.groupedByDayOfWeek
 //import com.example.expensestracker.data.groupedByDayOfMonth
 
 import com.example.expensestracker.navigation.ui.theme.LabelSecondary
+import com.example.expensestracker.screens.BudgetList
 import com.example.expensestracker.screens.ui.theme.DarculaPrimary
 import com.example.expensestracker.screens.ui.theme.DarculaSecondary
 import com.example.expensestracker.screens.ui.theme.DarculaText
+import com.example.expensestracker.utils.PrefDataStore
 import com.example.expensestracker.utils.Utility
 import com.example.expensestracker.utils.Utility.backborder
 import com.example.expensestracker.utils.simplifyNumber
@@ -76,7 +79,7 @@ fun MonthlyChart(  expenses: List<ExpensesFb>, month: LocalDate
     val context = LocalContext.current
     val c1 = DarculaSecondary
     val c2 = DarculaPrimary
-
+//    var budget by remember { mutableStateOf("") }
     val grouped = expenses.groupedByDayOfMonth()
     val numberOfDays = YearMonth.of(month.year, month.month).lengthOfMonth()
 
@@ -205,4 +208,12 @@ fun MonthlyChart(  expenses: List<ExpensesFb>, month: LocalDate
             }
         }
     }
+
+    /*Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+
+    LaunchedEffect(Unit) {
+         budget = PrefDataStore.getData(context, PrefDataStore.NAME).toString()
+        Log.d("><", "$budget")
+    }*/
+  //  BudgetList(context,budget)
 }
